@@ -1,6 +1,6 @@
 altair
 pandas
 streamlit
-PyPDF2
 txtai
 transformers
+PyPDF2
