@@ -37,24 +37,7 @@ def extract_text_from_pdf(file_path):
         text = page.extract_text()
     return text
 
-#Fonction de resume de texte avec Pegasus Turned
-def get_response(input_text):
-    model_name = 'tuner007/pegasus_summarizer'
-    torch_device = 'cuda' if torch.cuda.is_available() else 'cpu'
-    tokenizer = PegasusTokenizer.from_pretrained(model_name)
-    model = PegasusForConditionalGeneration.from_pretrained(model_name).to(torch_device)
-    max_input_length = 1024  # Maximum length of the input text
-    desired_summary_length = len(input_text) // 2  # Calculate desired summary length
-    batch = tokenizer([input_text], truncation=True, padding='longest', max_length=max_input_length, return_tensors="pt").to(torch_device)
-    gen_out = model.generate(
-        **batch,
-        max_length=desired_summary_length,  # Set the max length for the summary
-        num_beams=5,
-        num_return_sequences=1,
-        temperature=1.5
-    )
-    output_text = tokenizer.batch_decode(gen_out, skip_special_tokens=True)
-    return output_text
+
 
 
 choice = st.sidebar.selectbox(
