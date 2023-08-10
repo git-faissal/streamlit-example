@@ -1,6 +1,9 @@
 import streamlit as st 
-from txtai.pipeline import Summary
 from PyPDF2 import PdfReader
+import streamlit as st
+from txtai.pipeline import Summary
+from transformers import AutoTokenizer, AutoModelForSeq2SeqLM
+
 
 #importation des bibliotheque de synthese de presse en ligne
 import matplotlib.pyplot as plt
