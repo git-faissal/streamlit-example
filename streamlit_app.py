@@ -4,7 +4,6 @@ import requests
 #importation des bibliotheque de synthese de presse en ligne
 import pandas as pd
 import requests
-from bs4 import BeautifulSoup
 import datetime
 #import des package
 
