@@ -1,24 +1,12 @@
 import streamlit as st 
-from txtai.pipeline import Summary
 from PyPDF2 import PdfReader
 import requests
 #importation des bibliotheque de synthese de presse en ligne
-import matplotlib.pyplot as plt
 import pandas as pd
-from datasets import load_dataset, load_metric
-from nltk.tokenize import sent_tokenize
-from transformers import AutoModelForSeq2SeqLM, AutoTokenizer
-import numpy as np
-from transformers import pipeline, set_seed
-import torch
-from transformers import PegasusForConditionalGeneration, PegasusTokenizer
 import requests
 from bs4 import BeautifulSoup
 import datetime
 #import des package
-import nltk
-from newspaper import Article
-nltk.download('punkt')
 
 st.set_page_config(layout="wide")
 @st.cache_resource
