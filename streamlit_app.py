@@ -43,14 +43,21 @@ def extract_text_from_pdf(file_path):
 
 def query(payload):
     API_TOKEN="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"
-    API_URL = "https://api-inference.huggingface.co/models/gpt2"
+    API_URL ="https://api-inference.huggingface.co/models/tuner007/pegasus_summarizer"
+    #API_URL = "https://api-inference.huggingface.co/models/gpt2"
     headers = {"Authorization": f"Bearer {API_TOKEN}"}
     data = json.dumps(payload)
     response = requests.request("POST", API_URL, headers=headers, data=data)
     return json.loads(response.content.decode("utf-8"))
+    
 def get_summary(text):
-    data=query(text)
-    return data[0]['generated_text']
+    data = query(text)
+    if 'summary_text' in data[0] and data[0]['summary_text'] is not None:
+        return data[0]['summary_text']
+    else:
+        error = "Erreur survenue lors de l'appel de l'API. Veuillez recommencer svp !!!"
+        return error
+        
 #Fonction de resume de texte avec Pegasus Turned
 def get_response(input_text):
     model_name = 'tuner007/pegasus_summarizer'
