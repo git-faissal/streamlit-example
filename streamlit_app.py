@@ -27,7 +27,8 @@ def extract_text_from_pdf(file_path):
 #Fonction appel aux modele de resume de texte en utilisant l'appel de l'API
 
 def query(payload):
-    API_URL = "https://api-inference.huggingface.co/models/tuner007/pegasus_summarizer"
+    #API_URL = "https://api-inference.huggingface.co/models/tuner007/pegasus_summarizer"
+    API_URL = "https://api-inference.huggingface.co/models/gpt2"
     headers = {"Authorization": "Bearer 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"}
     response = requests.post(API_URL, headers=headers, json=payload)
     return response.json()
