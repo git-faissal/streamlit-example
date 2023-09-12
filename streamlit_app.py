@@ -52,11 +52,12 @@ def query(payload):
     
 def get_summary(text):
     data = query(text)
-    if 'summary_text' in data[0] and data[0]['summary_text'] is not None:
+    if data and 'summary_text' in data[0] and data[0]['summary_text'] is not None:
         return data[0]['summary_text']
     else:
         error = "Erreur survenue lors de l'appel de l'API. Veuillez recommencer svp !!!"
         return error
+
         
 #Fonction de resume de texte avec Pegasus Turned
 def get_response(input_text):
