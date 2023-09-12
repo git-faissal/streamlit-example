@@ -25,20 +25,31 @@ def extract_text_from_pdf(file_path):
     return text
 
 #Fonction appel aux modele de resume de texte en utilisant l'appel de l'API
-
-def query(payload):
+#[0]['generated_text']
+#def query(payload):
     #API_URL = "https://api-inference.huggingface.co/models/tuner007/pegasus_summarizer"
-    API_URL = "https://api-inference.huggingface.co/models/gpt2"
-    headers = {"Authorization": "Bearer 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"}
-    response = requests.post(API_URL, headers=headers, json=payload)
-    return response.json()
+    #API_URL = "https://api-inference.huggingface.co/models/gpt2"
+    #headers = {"Authorization": "Bearer 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"}
+    #response = requests.post(API_URL, headers=headers, json=payload)
+    #return response.json()
 
 # Fonction pour obtenir le résumé d'un texte
+#def get_summary(text):
+    #resume = query({
+    #    "inputs": text
+    #})
+    #return resume[0]['summary_text']
+
+def query(payload):
+    API_TOKEN="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"
+    API_URL = "https://api-inference.huggingface.co/models/gpt2"
+    headers = {"Authorization": f"Bearer {API_TOKEN}"}
+    data = json.dumps(payload)
+    response = requests.request("POST", API_URL, headers=headers, data=data)
+    return json.loads(response.content.decode("utf-8"))
 def get_summary(text):
-    resume = query({
-        "inputs": text
-    })
-    return resume[0]['summary_text']
+  data=query(text)
+  return data[0]['generated_text']
 #Fonction de resume de texte avec Pegasus Turned
 def get_response(input_text):
     model_name = 'tuner007/pegasus_summarizer'
