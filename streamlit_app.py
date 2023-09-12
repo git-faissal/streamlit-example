@@ -5,6 +5,7 @@ import requests
 import pandas as pd
 import requests
 import datetime
+import json
 #import des package
 
 st.set_page_config(layout="wide")
@@ -48,8 +49,8 @@ def query(payload):
     response = requests.request("POST", API_URL, headers=headers, data=data)
     return json.loads(response.content.decode("utf-8"))
 def get_summary(text):
-  data=query(text)
-  return data[0]['generated_text']
+    data=query(text)
+    return data[0]['generated_text']
 #Fonction de resume de texte avec Pegasus Turned
 def get_response(input_text):
     model_name = 'tuner007/pegasus_summarizer'
