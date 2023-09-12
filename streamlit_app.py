@@ -28,7 +28,7 @@ def extract_text_from_pdf(file_path):
 
 def query(payload):
     API_URL = "https://api-inference.huggingface.co/models/tuner007/pegasus_summarizer"
-    headers = {"Authorization": "Bearer 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"}
+    headers = {"Authorization": "Bearer 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"}
     response = requests.post(API_URL, headers=headers, json=payload)
     return response.json()
 
