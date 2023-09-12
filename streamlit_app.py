@@ -49,7 +49,7 @@ def query(payload):
     data = json.dumps(payload)
     response = requests.request("POST", API_URL, headers=headers, data=data)
     return json.loads(response.content.decode("utf-8"))
-    
+
 def get_summary(text):
     data = query(text)
     if data and 'summary_text' in data[0] and data[0]['summary_text'] is not None:
