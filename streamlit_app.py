@@ -41,6 +41,7 @@ def extract_text_from_pdf(file_path):
     #})
     #return resume[0]['summary_text']
 
+#Fonction appel aux modele de resume de texte en utilisant l'appel de l'API
 def query(payload):
     API_TOKEN="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"
     API_URL ="https://api-inference.huggingface.co/models/tuner007/pegasus_summarizer"
@@ -50,9 +51,10 @@ def query(payload):
     response = requests.request("POST", API_URL, headers=headers, data=data)
     return json.loads(response.content.decode("utf-8"))
 
+#fonction appel de resume
 def get_summary(text):
     data = query(text)
-    if data and 'summary_text' in data[0] and data[0]['summary_text'] is not None:
+    if data and isinstance(data, list) and data[0].get('summary_text') is not None:
         return data[0]['summary_text']
     else:
         error = "Erreur survenue lors de l'appel de l'API. Veuillez recommencer svp !!!"
