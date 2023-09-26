@@ -2,5 +2,6 @@ PyPDF2
 altair
 pandas
 streamlit
+language-tool-python
 
 
