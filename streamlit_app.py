@@ -6,6 +6,8 @@ import pandas as pd
 import requests
 import datetime
 import json
+from language_tool_python import LanguageTool
+
 #import des package
 
 st.set_page_config(layout="wide")
@@ -16,6 +18,13 @@ def summary_text(text):
     text = (text)
     result = summary(text)
     return result
+
+#Fonction de correction
+
+def correct_spelling(text):
+    tool = LanguageTool('fr')
+    corrected_text = tool.correct(text)
+    return corrected_text
 
 #Fonction extraction du texte d'un document pdf
 def extract_text_from_pdf(file_path):
