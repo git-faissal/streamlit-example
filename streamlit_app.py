@@ -6,7 +6,7 @@ import pandas as pd
 import requests
 import datetime
 import json
-from language_tool_python import LanguageTool
+#from language_tool_python import LanguageTool
 
 #import des package
 
