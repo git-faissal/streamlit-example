@@ -76,7 +76,7 @@ def summarizeLangChain(input_text):
 
     # Define prompt
     prompt_template = """Write a concise summary of the following:
-    "{text}"
+    "{input_text}"
     CONCISE SUMMARY:"""
     prompt = PromptTemplate.from_template(prompt_template)
     chain = load_summarize_chain(llm, chain_type="map_reduce")
