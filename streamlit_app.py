@@ -58,7 +58,7 @@ def correct_spelling(text):
     return corrected_text
 
 #Fonction Resume Langchain
-def summarizeLangChain(text):
+def summarizeLangChain(input_text):
     #Definition de ma cle API
     os.environ['OPENAI_API_KEY'] = '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'
     llm = OpenAI(temperature=0)
@@ -167,7 +167,7 @@ choice = st.sidebar.selectbox(
 def run_app():
     if choice == "Resumer un Texte":
         st.subheader("NB: Dans cette zone, vous pourrez tester le modèle pour résumer vos reportages effectués sur le terrain. Ainsi, vous pourrez permettre à vos lecteurs de lire vos résumés et de se renseigner plus rapidement.")
-        st.subheader("Resume de texte avec PegasusTurned")
+        st.subheader("Resume de texte avec LangChain")
         input_text = st.text_area("Entrez votre texte ici")
         if st.button("Texte Resume"):
              col1, col2 = st.columns([1,1])
