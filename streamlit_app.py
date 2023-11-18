@@ -8,38 +8,7 @@ import datetime
 import json
 #IMPORTATION BIBLIOTHEQUE LANGCHAIN
 #Import des bibliotheque de langchain
-from langchain.chains.llm import LLMChain
-from langchain.prompts import PromptTemplate
-from langchain.chains.combine_documents.stuff import StuffDocumentsChain
-from langchain.chat_models import ChatOpenAI
-from langchain.memory import ConversationSummaryMemory
-from langchain.chains import ConversationalRetrievalChain
-from langchain.llms import LlamaCpp
-from langchain.prompts import PromptTemplate
-from langchain.chains import LLMChain
-from langchain.callbacks.manager import CallbackManager
-from langchain.memory import ConversationSummaryMemory
-from langchain.chains import ConversationalRetrievalChain
-from langchain.callbacks.streaming_stdout import StreamingStdOutCallbackHandler
-#OPENAI_API_KEY=""
-import os
-os.environ['OPENAI_API_KEY'] = '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'
-#import des bibliotheques langchain
-from langchain import OpenAI, PromptTemplate, LLMChain
-from langchain.text_splitter import CharacterTextSplitter
-from langchain.chains.mapreduce import MapReduceChain
-from langchain.prompts import PromptTemplate
-from langchain.schema import Document
-from langchain.chains.summarize import load_summarize_chain
-import textwrap
-from langchain.chains import ConversationChain
-from langchain.schema import (
-    AIMessage,
-    HumanMessage,
-    SystemMessage
-)
-from langchain.chat_models import ChatOpenAI
-import unicodedata
+
 #Fin IMPORTATION
 #import des package
 
@@ -52,44 +21,6 @@ def summary_text(text):
     result = summary(text)
     return result
 
-def correct_spelling(text):
-    tool = LanguageTool('fr')
-    corrected_text = tool.correct(text)
-    return corrected_text
-
-#Fonction Resume Langchain
-def summarizeLangChain(input_text):
-    #Definition de ma cle API
-    os.environ['OPENAI_API_KEY'] = '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'
-    llm = OpenAI(temperature=0)
-    """Generates a summary of the given text using LangChain.
-
-    Args:
-        text: The text to be summarized.
-
-    Returns:
-        A string containing the summary of the given text.
-    """
-
-    # Convert the text to a LangChain Document object
-    doc = Document(text=text, page_content=text)
-
-    # Define prompt
-    prompt_template = """Write a concise summary of the following:
-    "{input_text}"
-    CONCISE SUMMARY:"""
-    prompt = PromptTemplate.from_template(prompt_template)
-    chain = load_summarize_chain(llm, chain_type="map_reduce")
-    # Define LLM chain
-    llm = ChatOpenAI(temperature=0, model_name="gpt-3.5-turbo-16k")
-    llm_chain = LLMChain(llm=llm, prompt=prompt)
-    # Exécutez la chaîne de traitement
-    summary = llm_chain.run(text)
-    #traduction francais
-    result = traduction_francais(summary)
-    #CORRECTION DU RESUME
-    correctedText = correct_spelling(result)
-    return correctedText
 
 #Fonction extraction du texte d'un document pdf
 def extract_text_from_pdf(file_path):
@@ -176,7 +107,7 @@ def run_app():
                 st.info(input_text)
              with col2:
                 #result = get_response(input_text)
-                result = summarizeLangChain(input_text)
+                result = get_summary(input_text)
                 st.markdown("***Texte Resume***")
                 st.success(result)
              
