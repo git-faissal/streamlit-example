@@ -107,8 +107,8 @@ def run_app():
                 st.markdown("***Votre texte entrez***")
                 st.info(input_text)
              with col2:
-                #result = get_response(input_text)
-                result = get_summary(input_text)
+                result = get_response(input_text)
+                #result = get_summary(input_text)
                 st.markdown("***Texte Resume***")
                 st.success(result)
              
