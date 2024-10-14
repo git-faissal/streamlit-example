@@ -15,7 +15,10 @@ import io
 import os
 import ffmpeg
 import numpy as np
-import deepspeech
+import os
+import numpy as np
+import ffmpeg
+import coqui_stt
 
 
 
@@ -30,13 +33,13 @@ def summary_text(text):
     result = summary(text)
     return result
 
-
 def transcribe_audio_deepspeech(audio_file):
     try:
-        # Chargement du modèle DeepSpeech
-        #model_path = 'path/to/deepspeech/model.pbmm'  # Chemin vers le modèle DeepSpeech
-        model_path = 'wget https://github.com/mozilla/DeepSpeech/releases/download/v0.9.3/deepspeech-0.9.3-models.pbmm'
-        model = deepspeech.Model(model_path)
+        # Chemin vers le modèle Coqui STT
+        model_path = 'path/to/your/coqui/model'  # Assure-toi d'avoir téléchargé le modèle en français
+
+        # Chargement du modèle Coqui STT
+        model = coqui_stt.Model(model_path)
 
         # Extraire l'audio du fichier mp4
         audio_path = "temp_audio.wav"
@@ -45,10 +48,8 @@ def transcribe_audio_deepspeech(audio_file):
         # Charger le fichier audio pour la transcription
         audio_data = np.frombuffer(open(audio_path, 'rb').read(), np.int16)
 
-        # Obtenir la fréquence d'échantillonnage du modèle
-        sample_rate = model.sampleRate()
-
         # Vérifier si la fréquence d'échantillonnage est correcte
+        sample_rate = model.sampleRate()
         if audio_data.shape[0] == 0:
             raise ValueError("Le fichier audio est vide.")
 
@@ -62,7 +63,6 @@ def transcribe_audio_deepspeech(audio_file):
 
     except Exception as e:
         return f"Erreur lors de la transcription : {str(e)}"
-
 
 
 # Fonction pour extraire du texte d'un document PDF
