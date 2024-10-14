@@ -8,6 +8,8 @@ import datetime
 import json
 #IMPORTATION BIBLIOTHEQUE LANGCHAIN
 #Import des bibliotheque de langchain
+import torch
+from transformers import PegasusTokenizer, PegasusForConditionalGeneration
 
 #Fin IMPORTATION
 #import des package
