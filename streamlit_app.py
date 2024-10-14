@@ -31,28 +31,28 @@ def summary_text(text):
     return result
 
 
-def transcribe_audio_vosk(audio_file):
+def transcribe_audio_deepspeech(audio_file):
     try:
         # Chargement du modèle DeepSpeech
         model_path = 'path/to/deepspeech/model.pbmm'  # Chemin vers le modèle DeepSpeech
         model = deepspeech.Model(model_path)
+
         # Extraire l'audio du fichier mp4
         audio_path = "temp_audio.wav"
         ffmpeg.input(audio_file).output(audio_path).run(overwrite_output=True)
 
         # Charger le fichier audio pour la transcription
-        with open(audio_path, 'rb') as f:
-            # Lire le fichier audio
-            audio_data = f.read()
+        audio_data = np.frombuffer(open(audio_path, 'rb').read(), np.int16)
 
         # Obtenir la fréquence d'échantillonnage du modèle
         sample_rate = model.sampleRate()
-        
-        # Convertir les données audio en format approprié
-        audio_array = np.frombuffer(audio_data, np.int16)
+
+        # Vérifier si la fréquence d'échantillonnage est correcte
+        if audio_data.shape[0] == 0:
+            raise ValueError("Le fichier audio est vide.")
 
         # Transcription
-        result = model.stt(audio_array)
+        result = model.stt(audio_data)
 
         # Supprimer le fichier audio temporaire
         os.remove(audio_path)
