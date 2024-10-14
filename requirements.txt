@@ -12,7 +12,7 @@ soundfile
 pydub
 ffmpeg-python
 coqui-stt
-
+assemblyai
 
 
 
