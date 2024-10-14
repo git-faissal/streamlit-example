@@ -11,8 +11,9 @@ vosk
 soundfile
 pydub
 ffmpeg
-deepspeech
 ffmpeg-python
+coqui-stt
+
 
 
 
