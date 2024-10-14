@@ -3,9 +3,9 @@ altair
 pandas
 streamlit
 language-tool-python
-requests==2.31.0
-jsonlib-python3==1.6.1
-transformers==4.33.0
-torch==2.0.1
+requests
+jsonlib-python3
+transformers
+torch
 
 
