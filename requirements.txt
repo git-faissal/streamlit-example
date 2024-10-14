@@ -11,7 +11,9 @@ vosk
 soundfile
 pydub
 ffmpeg
-ffprobe
+deepspeech
+ffmpeg-python
+
 
 
 
