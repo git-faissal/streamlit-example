@@ -24,7 +24,7 @@ def summary_text(text):
     result = summary(text)
     return result
 
-3Test de zhisper
+#Test de whisper
 import whisper
 
 # Fonction pour transcrire un fichier audio en texte
