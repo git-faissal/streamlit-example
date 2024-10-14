@@ -153,9 +153,8 @@ def run_app():
                     summary_result = get_summary(result)
                     st.success(summary_result)
 
-    if choice == "Transcription Audio-Texte":
+    elif choice == "Transcription Audio-Texte":
         st.subheader("Transcription Audio en Texte")
-        
         # Uploader pour le fichier audio
         input_file = st.file_uploader("Chargez votre fichier audio (.mp3)", type=['mp3'])
         
