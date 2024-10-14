@@ -12,6 +12,11 @@ import soundfile as sf
 from pydub import AudioSegment
 import io
 
+import os
+import ffmpeg
+import numpy as np
+import deepspeech
+
 
 
 
@@ -26,33 +31,37 @@ def summary_text(text):
     return result
 
 
-# Fonction pour transcrire un fichier audio en texte avec Vosk
 def transcribe_audio_vosk(audio_file):
     try:
-        # Convertir le fichier .mp4 en .wav
-        audio = AudioSegment.from_file(audio_file)
-        audio = audio.set_frame_rate(16000).set_channels(1)  # Conversion en 16 kHz, mono
+        # Chargement du modèle DeepSpeech
+        model_path = 'path/to/deepspeech/model.pbmm'  # Chemin vers le modèle DeepSpeech
+        model = deepspeech.Model(model_path)
+        # Extraire l'audio du fichier mp4
+        audio_path = "temp_audio.wav"
+        ffmpeg.input(audio_file).output(audio_path).run(overwrite_output=True)
 
-        # Sauvegarder l'audio en format WAV
-        wav_file = io.BytesIO()
-        audio.export(wav_file, format="wav")
-        wav_file.seek(0)
+        # Charger le fichier audio pour la transcription
+        with open(audio_path, 'rb') as f:
+            # Lire le fichier audio
+            audio_data = f.read()
 
-        # Chargement du modèle Vosk
-        model = Model(lang="fr")
-        rec = KaldiRecognizer(model, 16000)
+        # Obtenir la fréquence d'échantillonnage du modèle
+        sample_rate = model.sampleRate()
+        
+        # Convertir les données audio en format approprié
+        audio_array = np.frombuffer(audio_data, np.int16)
 
-        # Lecture et transcription de l'audio
-        with sf.SoundFile(wav_file) as f:
-            audio_data = f.read(dtype="int16")
-            rec.AcceptWaveform(audio_data)
+        # Transcription
+        result = model.stt(audio_array)
 
-        # Récupérer le texte transcrit
-        result = rec.Result()
+        # Supprimer le fichier audio temporaire
+        os.remove(audio_path)
+
         return result
 
     except Exception as e:
         return f"Erreur lors de la transcription : {str(e)}"
+
 
 
 # Fonction pour extraire du texte d'un document PDF
