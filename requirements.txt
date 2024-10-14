@@ -10,6 +10,7 @@ torch
 vosk
 soundfile
 pydub
+ffmpeg
 
 
 
