@@ -115,8 +115,7 @@ def run_app():
 
     elif choice == "Transcription Audio-Text":
         st.subheader("Transcription Audio en Texte")
-        input_file = st.file_uploader("Chargez un fichier audio (.mp3)", type=['mp3'])
-        
+        input_file = st.file_uploader("Chargez un fichier audio (.mp4)", type=['mp4'])
         if input_file is not None:
             if st.button("Transcrire audio"):
                 with open("audio_file.mp3", "wb") as f:
