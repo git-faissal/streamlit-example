@@ -1,48 +1,30 @@
-import streamlit as st 
+import streamlit as st
 from PyPDF2 import PdfReader
 import requests
-#importation des bibliotheque de synthese de presse en ligne
 import pandas as pd
-import requests
 import datetime
 import json
-#IMPORTATION BIBLIOTHEQUE LANGCHAIN
-#Import des bibliotheque de langchain
-#transcription audio
+import torch
 import whisper
-
-
-#Fin IMPORTATION
-#import des package
+from transformers import PegasusTokenizer, PegasusForConditionalGeneration
 
 st.set_page_config(layout="wide")
+
+# Fonction de résumé de texte avec txtai
 @st.cache_resource
-#Fonction de resume de texte avec txtai
 def summary_text(text):
     summary = Summary()
-    text = (text)
     result = summary(text)
     return result
 
-#Test de whisper
-import whisper
-
 # Fonction pour transcrire un fichier audio en texte
 def transcribe_audio_to_text(file_path, language="fr"):
-    # Chargement du modèle Whisper (choisis la taille selon tes besoins : tiny, base, small, medium, large)
     model = whisper.load_model("base")
-    
-    # Transcription du fichier audio
     result = model.transcribe(file_path, language=language)
-    
-    # Extraction du texte transcrit
     text = result['text']
-    
     return text
 
-
-
-#Fonction extraction du texte d'un document pdf
+# Fonction pour extraire du texte d'un document PDF
 def extract_text_from_pdf(file_path):
     with open(file_path, 'rb') as f:
         reader = PdfReader(f)
@@ -50,131 +32,91 @@ def extract_text_from_pdf(file_path):
         text = page.extract_text()
     return text
 
-#Fonction appel aux modele de resume de texte en utilisant l'appel de l'API
-#[0]['generated_text']
-#def query(payload):
-    #API_URL = "https://api-inference.huggingface.co/models/tuner007/pegasus_summarizer"
-    #API_URL = "https://api-inference.huggingface.co/models/gpt2"
-    #headers = {"Authorization": "Bearer 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"}
-    #response = requests.post(API_URL, headers=headers, json=payload)
-    #return response.json()
-
-# Fonction pour obtenir le résumé d'un texte
-#def get_summary(text):
-    #resume = query({
-    #    "inputs": text
-    #})
-    #return resume[0]['summary_text']
-
-#Fonction appel aux modele de resume de texte en utilisant l'appel de l'API
+# Fonction d'appel à l'API pour la génération de résumé
 def query(payload):
-    #API_TOKEN="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"
-    API_TOKEN= "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"
-    API_URL ="https://api-inference.huggingface.co/models/tuner007/pegasus_summarizer"
-    #API_URL = "https://api-inference.huggingface.co/models/gpt2"
+    API_TOKEN = "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"
+    API_URL = "https://api-inference.huggingface.co/models/tuner007/pegasus_summarizer"
     headers = {"Authorization": f"Bearer {API_TOKEN}"}
-    data = json.dumps(payload)
-    response = requests.request("POST", API_URL, headers=headers, data=data)
-    return json.loads(response.content.decode("utf-8"))
+    response = requests.post(API_URL, headers=headers, json=payload)
+    return response.json()
 
-
-#fonction appel de resume
+# Fonction pour obtenir le résumé d'un texte via l'API
 def get_summary(text):
-    data = query(text)
-    if data and isinstance(data, list) and data[0].get('summary_text') is not None:
+    data = query({"inputs": text})
+    if data and isinstance(data, list) and 'summary_text' in data[0]:
         return data[0]['summary_text']
     else:
-        error = "Erreur survenue lors de l'appel de l'API. Veuillez recommencer svp !!!"
-        return error
+        return "Erreur survenue lors de l'appel de l'API. Veuillez réessayer."
 
-        
-#Fonction de resume de texte avec Pegasus Turned
+# Fonction pour obtenir un résumé avec Pegasus directement
 def get_response(input_text):
     model_name = 'tuner007/pegasus_summarizer'
     torch_device = 'cuda' if torch.cuda.is_available() else 'cpu'
     tokenizer = PegasusTokenizer.from_pretrained(model_name)
     model = PegasusForConditionalGeneration.from_pretrained(model_name).to(torch_device)
-    max_input_length = 1024  # Maximum length of the input text
-    desired_summary_length = len(input_text) // 2  # Calculate desired summary length
-    batch = tokenizer([input_text], truncation=True, padding='longest', max_length=max_input_length, return_tensors="pt").to(torch_device)
-    gen_out = model.generate(
-        **batch,
-        max_length=desired_summary_length,  # Set the max length for the summary
-        num_beams=5,
-        num_return_sequences=1,
-        temperature=1.5
-    )
+    
+    batch = tokenizer([input_text], truncation=True, padding='longest', max_length=1024, return_tensors="pt").to(torch_device)
+    gen_out = model.generate(**batch, max_length=150, num_beams=5, num_return_sequences=1)
+    
     output_text = tokenizer.batch_decode(gen_out, skip_special_tokens=True)
-    return output_text
+    return output_text[0]
 
-
+# Menu de sélection pour différentes fonctionnalités
 choice = st.sidebar.selectbox(
     "Choisir",
     [
-       
-        "Resumer un Texte",
-        "Transcription Audio_Text",
-        "Resumer un document"
+        "Résumé d'un texte",
+        "Transcription Audio-Text",
+        "Résumé d'un document"
     ]
 )
 
+# Application principale
 def run_app():
-    if choice == "Resumer un Texte":
-        st.subheader("NB: Dans cette zone, vous pourrez tester le modèle pour résumer vos reportages effectués sur le terrain. Ainsi, vous pourrez permettre à vos lecteurs de lire vos résumés et de se renseigner plus rapidement.")
-        st.subheader("Ceci est un prototype de test en cours de développement. !!!")
-        st.subheader("Resume de texte avec Pegasus_Summarizer")
+    if choice == "Résumé d'un texte":
+        st.subheader("Résumé de texte avec Pegasus_Summarizer")
         input_text = st.text_area("Entrez votre texte ici")
-        if st.button("Texte Resume"):
-             col1, col2 = st.columns([1,1])
-             with col1:
-                st.markdown("***Votre texte entrez***")
+        if st.button("Résumer le texte"):
+            col1, col2 = st.columns(2)
+            with col1:
+                st.markdown("***Texte saisi***")
                 st.info(input_text)
-             with col2:
-                #result = get_response(input_text)
+            with col2:
                 result = get_summary(input_text)
-                st.markdown("***Texte Resume***")
+                st.markdown("***Résumé généré***")
                 st.success(result)
-            
-    elif choice == "Resumer un document":
-        st.subheader("Document resume avec Pegasus")
-        input_file = st.file_uploader("Charger le document", type=['pdf'])
+
+    elif choice == "Résumé d'un document":
+        st.subheader("Résumé d'un document PDF")
+        input_file = st.file_uploader("Charger un document PDF", type=['pdf'])
         if input_file is not None:
-            if st.button("Resume un document"):
+            if st.button("Résumer le document"):
                 with open("doc_file.pdf", "wb") as f:
                     f.write(input_file.getbuffer())
-                col1, col2 = st.columns([1,1])
+                col1, col2 = st.columns(2)
                 with col1:
-                    st.markdown("**Extraction du texte de votre document**")
+                    st.markdown("**Texte extrait du document**")
                     extracted_text = extract_text_from_pdf("doc_file.pdf")
                     st.info(extracted_text)
                 with col2:
-                    result = extract_text_from_pdf("doc_file.pdf")
-                    st.markdown("**Document resume**")
-                    summary_result = get_summary(result)
+                    summary_result = get_summary(extracted_text)
+                    st.markdown("**Résumé du document**")
                     st.success(summary_result)
 
-    elif choice == "Transcription Audio-Texte":
+    elif choice == "Transcription Audio-Text":
         st.subheader("Transcription Audio en Texte")
-        # Uploader pour le fichier audio
-        input_file = st.file_uploader("Chargez votre fichier audio (.mp3)", type=['mp3'])
+        input_file = st.file_uploader("Chargez un fichier audio (.mp3)", type=['mp3'])
         
         if input_file is not None:
             if st.button("Transcrire audio"):
-                # Sauvegarde du fichier audio temporairement
                 with open("audio_file.mp3", "wb") as f:
                     f.write(input_file.getbuffer())
                 
-                # Transcription de l'audio en texte
-                result = transcribe_audio_to_text("audio_file.mp3")  # Utilisation correcte de la fonction
+                result = transcribe_audio_to_text("audio_file.mp3")
                 st.markdown("**Texte transcrit**")
-                
-                # Affichage du texte transcrit
                 st.success(result)
-
-    
-
-
-            
 
 if __name__ == '__main__':
     run_app()
+
+
