@@ -7,8 +7,10 @@ requests
 jsonlib-python3
 transformers
 torch
-torch>=1.9.0  # Ou une version compatible avec Whisper
-whisper
+vosk
+soundfile
+
+
 
 
 
