@@ -16,9 +16,12 @@ import os
 import ffmpeg
 import numpy as np
 import os
-import numpy as np
 import ffmpeg
-import coqui_stt
+
+
+import streamlit as st
+import assemblyai as aai
+
 
 
 
@@ -33,34 +36,16 @@ def summary_text(text):
     result = summary(text)
     return result
 
-def transcribe_audio_deepspeech(audio_file):
+
+# Configuration de l'API Key
+aai.settings.api_key = "42b6f7e917114668b99a01927dc49d8c"
+
+# Fonction pour transcrire un fichier audio en texte avec AssemblyAI
+def transcribe_audio_assemblyai(audio_file):
     try:
-        # Chemin vers le modèle Coqui STT
-        model_path = 'path/to/your/coqui/model'  # Assure-toi d'avoir téléchargé le modèle en français
-
-        # Chargement du modèle Coqui STT
-        model = coqui_stt.Model(model_path)
-
-        # Extraire l'audio du fichier mp4
-        audio_path = "temp_audio.wav"
-        ffmpeg.input(audio_file).output(audio_path).run(overwrite_output=True)
-
-        # Charger le fichier audio pour la transcription
-        audio_data = np.frombuffer(open(audio_path, 'rb').read(), np.int16)
-
-        # Vérifier si la fréquence d'échantillonnage est correcte
-        sample_rate = model.sampleRate()
-        if audio_data.shape[0] == 0:
-            raise ValueError("Le fichier audio est vide.")
-
-        # Transcription
-        result = model.stt(audio_data)
-
-        # Supprimer le fichier audio temporaire
-        os.remove(audio_path)
-
-        return result
-
+        # Transcription de l'audio
+        transcript = aai.Transcriber().transcribe(audio_file)
+        return transcript.text
     except Exception as e:
         return f"Erreur lors de la transcription : {str(e)}"
 
@@ -152,7 +137,7 @@ def run_app():
                 with open("audio_file.mp4", "wb") as f:
                     f.write(input_file.getbuffer())
                 
-                result = transcribe_audio_deepspeech("audio_file.mp4")
+                result = transcribe_audio_assemblyai("audio_file.mp4")
                 st.markdown("**Texte transcrit**")
                 st.success(result)
 
