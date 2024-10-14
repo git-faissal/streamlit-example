@@ -8,8 +8,7 @@ import datetime
 import json
 #IMPORTATION BIBLIOTHEQUE LANGCHAIN
 #Import des bibliotheque de langchain
-import torch
-from transformers import PegasusTokenizer, PegasusForConditionalGeneration
+
 
 #Fin IMPORTATION
 #import des package
@@ -22,7 +21,6 @@ def summary_text(text):
     text = (text)
     result = summary(text)
     return result
-
 
 #Fonction extraction du texte d'un document pdf
 def extract_text_from_pdf(file_path):
@@ -58,6 +56,7 @@ def query(payload):
     data = json.dumps(payload)
     response = requests.request("POST", API_URL, headers=headers, data=data)
     return json.loads(response.content.decode("utf-8"))
+
 
 #fonction appel de resume
 def get_summary(text):
@@ -109,8 +108,8 @@ def run_app():
                 st.markdown("***Votre texte entrez***")
                 st.info(input_text)
              with col2:
-                result = get_response(input_text)
-                #result = get_summary(input_text)
+                #result = get_response(input_text)
+                result = get_summary(input_text)
                 st.markdown("***Texte Resume***")
                 st.success(result)
              
