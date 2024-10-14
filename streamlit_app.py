@@ -118,10 +118,10 @@ def run_app():
         input_file = st.file_uploader("Chargez un fichier audio (.mp4)", type=['mp4'])
         if input_file is not None:
             if st.button("Transcrire audio"):
-                with open("audio_file.mp3", "wb") as f:
+                with open("audio_file.mp4", "wb") as f:
                     f.write(input_file.getbuffer())
                 
-                result = transcribe_audio_vosk("audio_file.mp3")
+                result = transcribe_audio_vosk("audio_file.mp4")
                 st.markdown("**Texte transcrit**")
                 st.success(result)
 
