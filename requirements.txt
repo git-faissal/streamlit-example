@@ -7,5 +7,6 @@ requests
 jsonlib-python3
 transformers
 torch
+whisper
 
 
