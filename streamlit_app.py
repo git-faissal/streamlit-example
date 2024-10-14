@@ -34,7 +34,8 @@ def summary_text(text):
 def transcribe_audio_deepspeech(audio_file):
     try:
         # Chargement du modèle DeepSpeech
-        model_path = 'path/to/deepspeech/model.pbmm'  # Chemin vers le modèle DeepSpeech
+        #model_path = 'path/to/deepspeech/model.pbmm'  # Chemin vers le modèle DeepSpeech
+        model_path = 'wget https://github.com/mozilla/DeepSpeech/releases/download/v0.9.3/deepspeech-0.9.3-models.pbmm'
         model = deepspeech.Model(model_path)
 
         # Extraire l'audio du fichier mp4
@@ -151,7 +152,7 @@ def run_app():
                 with open("audio_file.mp4", "wb") as f:
                     f.write(input_file.getbuffer())
                 
-                result = transcribe_audio_vosk("audio_file.mp4")
+                result = transcribe_audio_deepspeech("audio_file.mp4")
                 st.markdown("**Texte transcrit**")
                 st.success(result)
 
