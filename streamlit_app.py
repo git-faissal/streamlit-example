@@ -26,28 +26,33 @@ def summary_text(text):
     return result
 
 
+# Fonction pour transcrire un fichier audio en texte avec Vosk
 def transcribe_audio_vosk(audio_file):
-    # Charger et convertir l'audio en format WAV avec échantillonnage 16 kHz
-    audio = AudioSegment.from_file(audio_file)
-    audio = audio.set_frame_rate(16000).set_channels(1)  # Conversion à 16 kHz, mono
+    try:
+        # Convertir le fichier .mp4 en .wav
+        audio = AudioSegment.from_file(audio_file)
+        audio = audio.set_frame_rate(16000).set_channels(1)  # Conversion en 16 kHz, mono
 
-    # Sauvegarder l'audio dans un buffer mémoire pour le traitement
-    audio_buffer = io.BytesIO()
-    audio.export(audio_buffer, format="wav")
-    audio_buffer.seek(0)
+        # Sauvegarder l'audio en format WAV
+        wav_file = io.BytesIO()
+        audio.export(wav_file, format="wav")
+        wav_file.seek(0)
 
-    # Charger le modèle Vosk
-    model = Model(lang="fr")
-    recognizer = KaldiRecognizer(model, 16000)
+        # Chargement du modèle Vosk
+        model = Model(lang="fr")
+        rec = KaldiRecognizer(model, 16000)
 
-    # Lire et traiter l'audio
-    with sf.SoundFile(audio_buffer) as f:
-        audio_data = f.read(dtype="int16")
-        recognizer.AcceptWaveform(audio_data)
-    
-    # Récupérer le texte transcrit
-    result = recognizer.Result()
-    return result
+        # Lecture et transcription de l'audio
+        with sf.SoundFile(wav_file) as f:
+            audio_data = f.read(dtype="int16")
+            rec.AcceptWaveform(audio_data)
+
+        # Récupérer le texte transcrit
+        result = rec.Result()
+        return result
+
+    except Exception as e:
+        return f"Erreur lors de la transcription : {str(e)}"
 
 
 # Fonction pour extraire du texte d'un document PDF
