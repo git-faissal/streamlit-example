@@ -9,6 +9,11 @@ from transformers import PegasusTokenizer, PegasusForConditionalGeneration
 from vosk import Model, KaldiRecognizer
 import soundfile as sf
 
+from pydub import AudioSegment
+import io
+
+
+
 
 
 st.set_page_config(layout="wide")
@@ -20,17 +25,28 @@ def summary_text(text):
     result = summary(text)
     return result
 
-def transcribe_audio_vosk(audio_file):
-    model = Model(lang="fr")  # Chargement du modèle français
-    rec = KaldiRecognizer(model, 16000)
 
-    # Lecture du fichier audio
-    with sf.SoundFile(audio_file) as f:
+def transcribe_audio_vosk(audio_file):
+    # Charger et convertir l'audio en format WAV avec échantillonnage 16 kHz
+    audio = AudioSegment.from_file(audio_file)
+    audio = audio.set_frame_rate(16000).set_channels(1)  # Conversion à 16 kHz, mono
+
+    # Sauvegarder l'audio dans un buffer mémoire pour le traitement
+    audio_buffer = io.BytesIO()
+    audio.export(audio_buffer, format="wav")
+    audio_buffer.seek(0)
+
+    # Charger le modèle Vosk
+    model = Model(lang="fr")
+    recognizer = KaldiRecognizer(model, 16000)
+
+    # Lire et traiter l'audio
+    with sf.SoundFile(audio_buffer) as f:
         audio_data = f.read(dtype="int16")
-        rec.AcceptWaveform(audio_data)
-        
-    # Transcription en texte
-    result = rec.Result()
+        recognizer.AcceptWaveform(audio_data)
+    
+    # Récupérer le texte transcrit
+    result = recognizer.Result()
     return result
 
 
