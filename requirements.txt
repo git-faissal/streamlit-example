@@ -3,5 +3,4 @@ altair
 pandas
 streamlit
 language-tool-python
-openai tiktoken chromadb langchain
 
