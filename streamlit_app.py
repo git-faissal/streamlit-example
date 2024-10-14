@@ -5,8 +5,11 @@ import pandas as pd
 import datetime
 import json
 import torch
-import whisper
 from transformers import PegasusTokenizer, PegasusForConditionalGeneration
+from vosk import Model, KaldiRecognizer
+import soundfile as sf
+
+
 
 st.set_page_config(layout="wide")
 
@@ -17,12 +20,19 @@ def summary_text(text):
     result = summary(text)
     return result
 
-# Fonction pour transcrire un fichier audio en texte
-def transcribe_audio_to_text(file_path, language="fr"):
-    model = whisper.load_model("base")
-    result = model.transcribe(file_path, language=language)
-    text = result['text']
-    return text
+def transcribe_audio_vosk(audio_file):
+    model = Model(lang="fr")  # Chargement du modèle français
+    rec = KaldiRecognizer(model, 16000)
+
+    # Lecture du fichier audio
+    with sf.SoundFile(audio_file) as f:
+        audio_data = f.read(dtype="int16")
+        rec.AcceptWaveform(audio_data)
+        
+    # Transcription en texte
+    result = rec.Result()
+    return result
+
 
 # Fonction pour extraire du texte d'un document PDF
 def extract_text_from_pdf(file_path):
@@ -112,7 +122,7 @@ def run_app():
                 with open("audio_file.mp3", "wb") as f:
                     f.write(input_file.getbuffer())
                 
-                result = transcribe_audio_to_text("audio_file.mp3")
+                result = transcribe_audio_vosk("audio_file.mp3")
                 st.markdown("**Texte transcrit**")
                 st.success(result)
 
