@@ -8,6 +8,8 @@ import datetime
 import json
 #IMPORTATION BIBLIOTHEQUE LANGCHAIN
 #Import des bibliotheque de langchain
+#transcription audio
+import whisper
 
 
 #Fin IMPORTATION
