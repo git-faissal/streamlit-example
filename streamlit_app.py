@@ -24,6 +24,24 @@ def summary_text(text):
     result = summary(text)
     return result
 
+3Test de zhisper
+import whisper
+
+# Fonction pour transcrire un fichier audio en texte
+def transcribe_audio_to_text(file_path, language="fr"):
+    # Chargement du modèle Whisper (choisis la taille selon tes besoins : tiny, base, small, medium, large)
+    model = whisper.load_model("base")
+    
+    # Transcription du fichier audio
+    result = model.transcribe(file_path, language=language)
+    
+    # Extraction du texte transcrit
+    text = result['text']
+    
+    return text
+
+
+
 #Fonction extraction du texte d'un document pdf
 def extract_text_from_pdf(file_path):
     with open(file_path, 'rb') as f:
@@ -95,6 +113,7 @@ choice = st.sidebar.selectbox(
     [
        
         "Resumer un Texte",
+        "Transcription Audio_Text",
         "Resumer un document"
     ]
 )
@@ -115,7 +134,7 @@ def run_app():
                 result = get_summary(input_text)
                 st.markdown("***Texte Resume***")
                 st.success(result)
-             
+            
     elif choice == "Resumer un document":
         st.subheader("Document resume avec Pegasus")
         input_file = st.file_uploader("Charger le document", type=['pdf'])
@@ -133,6 +152,29 @@ def run_app():
                     st.markdown("**Document resume**")
                     summary_result = get_summary(result)
                     st.success(summary_result)
+
+    if choice == "Transcription Audio-Texte":
+        st.subheader("Transcription Audio en Texte")
+        
+        # Uploader pour le fichier audio
+        input_file = st.file_uploader("Chargez votre fichier audio (.mp3)", type=['mp3'])
+        
+        if input_file is not None:
+            if st.button("Transcrire audio"):
+                # Sauvegarde du fichier audio temporairement
+                with open("audio_file.mp3", "wb") as f:
+                    f.write(input_file.getbuffer())
+                
+                # Transcription de l'audio en texte
+                result = transcribe_audio_to_text("audio_file.mp3")  # Utilisation correcte de la fonction
+                st.markdown("**Texte transcrit**")
+                
+                # Affichage du texte transcrit
+                st.success(result)
+
+    
+
+
             
 
 if __name__ == '__main__':
