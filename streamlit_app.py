@@ -52,34 +52,46 @@ def extract_text_from_pdf(file_path):
         text = page.extract_text()
     return text
 
-# Fonction d'appel à l'API pour la génération de résumé
+#Fonction appel aux modele de resume de texte en utilisant l'appel de l'API
 def query(payload):
-    API_TOKEN = "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"
-    API_URL = "https://api-inference.huggingface.co/models/tuner007/pegasus_summarizer"
+    #API_TOKEN="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"
+    API_TOKEN= "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"
+    API_URL ="https://api-inference.huggingface.co/models/tuner007/pegasus_summarizer"
+    #API_URL = "https://api-inference.huggingface.co/models/gpt2"
     headers = {"Authorization": f"Bearer {API_TOKEN}"}
-    response = requests.post(API_URL, headers=headers, json=payload)
-    return response.json()
+    data = json.dumps(payload)
+    response = requests.request("POST", API_URL, headers=headers, data=data)
+    return json.loads(response.content.decode("utf-8"))
 
-# Fonction pour obtenir le résumé d'un texte via l'API
+
+#fonction appel de resume
 def get_summary(text):
-    data = query({"inputs": text})
-    if data and isinstance(data, list) and 'summary_text' in data[0]:
+    data = query(text)
+    if data and isinstance(data, list) and data[0].get('summary_text') is not None:
         return data[0]['summary_text']
     else:
-        return "Erreur survenue lors de l'appel de l'API. Veuillez réessayer."
+        error = "Erreur survenue lors de l'appel de l'API. Veuillez recommencer svp !!!"
+        return error
 
-# Fonction pour obtenir un résumé avec Pegasus directement
+        
+#Fonction de resume de texte avec Pegasus Turned
 def get_response(input_text):
     model_name = 'tuner007/pegasus_summarizer'
     torch_device = 'cuda' if torch.cuda.is_available() else 'cpu'
     tokenizer = PegasusTokenizer.from_pretrained(model_name)
     model = PegasusForConditionalGeneration.from_pretrained(model_name).to(torch_device)
-    
-    batch = tokenizer([input_text], truncation=True, padding='longest', max_length=1024, return_tensors="pt").to(torch_device)
-    gen_out = model.generate(**batch, max_length=150, num_beams=5, num_return_sequences=1)
-    
+    max_input_length = 1024  # Maximum length of the input text
+    desired_summary_length = len(input_text) // 2  # Calculate desired summary length
+    batch = tokenizer([input_text], truncation=True, padding='longest', max_length=max_input_length, return_tensors="pt").to(torch_device)
+    gen_out = model.generate(
+        **batch,
+        max_length=desired_summary_length,  # Set the max length for the summary
+        num_beams=5,
+        num_return_sequences=1,
+        temperature=1.5
+    )
     output_text = tokenizer.batch_decode(gen_out, skip_special_tokens=True)
-    return output_text[0]
+    return output_text
 
 # Menu de sélection pour différentes fonctionnalités
 choice = st.sidebar.selectbox(
