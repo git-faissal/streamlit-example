@@ -106,6 +106,7 @@ choice = st.sidebar.selectbox(
 # Application principale
 def run_app():
     if choice == "Résumé d'un texte":
+        st.subheader("NB: Tester Abstract-News notre prototype d'application de Resume de texte, docuemnt et transcription Audio-Texte !!!")
         st.subheader("Résumé de texte avec Pegasus_Summarizer")
         input_text = st.text_area("Entrez votre texte ici")
         if st.button("Résumer le texte"):
